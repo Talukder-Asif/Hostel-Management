@@ -1,20 +1,26 @@
-import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import { globalErrorHandler } from './app/middleware/globalErrorHandler';
+import express, { Application, Request, Response } from 'express';
+import globalErrorHandler from './app/Middleware/globalErrorHandler';
+import NotFound from './app/Middleware/NotFound';
 import router from './app/Router';
-import NotFound from './app/middleware/NotFound';
+import cookieParser from 'cookie-parser';
 
 const app: Application = express();
 
-//parser
+//parsers
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({ origin: ['http://localhost:5173'], credentials: true }));
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
-
+// application routes
 app.use('/api/v1', router);
+
+const getAController = (req: Request, res: Response) => {
+	const a = 10;
+	res.status(200).send({ value: a });
+};
+
+app.get('/', getAController);
 
 app.use(globalErrorHandler);
 
